@@ -3,7 +3,7 @@ import { ref } from 'vue'
 
 type State<D> = {
   code?: number
-  data: D
+  data: D & { totalCount?: number; list?: D }
 }
 
 type configType<D> = {
@@ -32,13 +32,21 @@ export const useAsync = <D>() => {
     return promise
       .then((res) => {
         if (res.code !== 0) {
+          loading.value = false
           return ElMessage({
             message: '请求异常',
             type: 'error'
           })
         }
         // console.log(res, 'res')
-        resultData.value = res.data
+        loading.value = false
+
+        if (typeof res.data.totalCount === 'number') {
+          resultData.value = res.data.list
+          total.value = res.data.totalCount
+        } else {
+          resultData.value = res.data
+        }
         if (config) {
           if (config.successMessage) {
             ElMessage({

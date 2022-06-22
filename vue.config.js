@@ -4,6 +4,9 @@ const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
 
 module.exports = {
     lintOnSave: false,
+    css: {
+        requireModuleExtension: true
+    },
     devServer: {
         proxy: {
             '^/api': {

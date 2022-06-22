@@ -25,6 +25,12 @@ export const mapMenusToRoutes = (menu: MenuDataType) => {
     })
   }
   renderRouter(menu)
-  routes.forEach((item) => router.addRoute('main', item))
-  setCache('defaultActive', routes[0].path)
+  if (routes.length) {
+    routes.forEach((item) => router.addRoute('main', item))
+    setCache('defaultActive', routes[0].path)
+  } else {
+    router.push({
+      path: '/login'
+    })
+  }
 }

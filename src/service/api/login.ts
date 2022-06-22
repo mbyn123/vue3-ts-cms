@@ -3,9 +3,9 @@ import { onMounted } from 'vue'
 import service from '..'
 
 // 登录
-export const useLogin = <T, D>() => {
+export const useLogin = <P, D>() => {
   const { run, ...rest } = useAsync<D>()
-  const mutate = (data: T) => {
+  const mutate = (data: P) => {
     return run(service.post('/login', data), { successMessage: '登录成功' })
   }
   return { mutate, ...rest }

@@ -20,7 +20,7 @@
 <script lang="ts" setup>
 import { useLogin } from '@/service/api/login'
 import { setCache } from '@/utils/cache'
-import { reactive, ref, watch } from 'vue'
+import { reactive, ref, watch, onMounted } from 'vue'
 import { loginParamsType, loginResultType } from './type'
 import { useRouter } from 'vue-router'
 import { FormInstance, FormRules } from 'element-plus'
@@ -32,6 +32,15 @@ const formRef = ref<FormInstance>()
 const form = reactive<loginParamsType>({
   name: 'coderwhy',
   password: '123456'
+})
+
+onMounted(() => {
+  document.onkeydown = () => {
+    const event = window.event as KeyboardEvent
+    if (event.key === 'Enter') {
+      onSubmit(formRef.value)
+    }
+  }
 })
 
 const rules = reactive<FormRules>({

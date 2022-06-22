@@ -6,7 +6,7 @@
       </el-aside>
       <el-container class="page">
         <el-header class="page-header"> <NavHeader :userInfo="userInfo" @clickCollapse="clickCollapse" /> </el-header>
-        <el-main class="page-content"> <router-view></router-view></el-main>
+        <el-main class="page-content"><MainContent></MainContent></el-main>
       </el-container>
     </el-container>
   </div>
@@ -15,6 +15,7 @@
 <script lang="ts" setup>
 import NavHeader from './components/navHeader.vue'
 import MenuBar from './components/menuBar.vue'
+import MainContent from './components/mainContent.vue'
 import { ref, watch } from 'vue'
 import { useAdminMenu, useAdminUser } from '@/service/api/login'
 import { getCache, setCache } from '@/utils/cache'
