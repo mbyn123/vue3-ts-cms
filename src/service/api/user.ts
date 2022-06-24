@@ -1,10 +1,10 @@
 import { useAsync } from '@/hooks/useAsync'
 import { pageStateType } from '@/hooks/useSearch'
-import { userpParamsType } from '@/views/main/system/user/type'
+import { userParamsType } from '@/views/main/system/user/type'
 import { watch } from 'vue'
 import service from '..'
 
-export const useUserList = <D>(data: pageStateType<userpParamsType>) => {
+export const useUserList = <D>(data: pageStateType<userParamsType>) => {
   const { run, ...rest } = useAsync<D>()
   const request = () => service.post('/users/list', { ...data.searchParmas, ...data.page })
   watch(

@@ -1,5 +1,6 @@
 import { reactive, ref } from 'vue'
 import ZForm from '@/components/form/z-form.vue'
+import _ from 'lodash'
 
 type pagingType = {
   offset: number
@@ -17,12 +18,12 @@ export default function useSearch<T>(date: T & object, pages?: pagingType) {
     size: 5
   }
 
-  const state = reactive<pageStateType<T>>({
+  const searchParam = reactive<pageStateType<T>>({
     page: { ...defaultPage },
     searchParmas: {}
   })
 
-  const formData = reactive<T & object>(date)
+  const searchFormData = reactive<T & object>(date)
 
   const formRef = ref<InstanceType<typeof ZForm>>()
 
@@ -30,13 +31,16 @@ export default function useSearch<T>(date: T & object, pages?: pagingType) {
 
   // 分页重置
   const resetPages = () => {
-    state.page = { ...defaultPage }
+    searchParam.page = { ...defaultPage }
   }
 
+  const clone = _.cloneDeep
+
   return {
-    state,
-    formData,
+    searchParam,
+    searchFormData,
     formRef,
+    clone,
     resetForm,
     resetPages
   }

@@ -10,7 +10,7 @@ export type userListItemType = {
   updateAt: string
 }
 
-export type userpParamsType = {
+export type userParamsType = {
   name?: string
   id?: string
   realname?: string

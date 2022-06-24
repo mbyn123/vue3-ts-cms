@@ -1,16 +1,18 @@
 <template>
   <div class="container">
     <z-form
+      mode="search"
       ref="formRef"
       :formItems="formItems"
-      :formData="formData"
+      :formData="searchFormData"
       @handResetClick="handResetClick"
       @handSubmitClick="handSubmitClick"
     />
+    <el-button type="primary" icon="Plus" @click="tableAdd">新增</el-button>
     <z-table
       :tableData="tableData"
       :tableColumns="tableColumns"
-      v-model:page="state.page"
+      v-model:page="searchParam.page"
       :total="total"
       :loading="loading"
       showIndexColumn
@@ -27,45 +29,89 @@
         </div>
       </template>
     </z-table>
+    <ZDialog
+      ref="dialogRef"
+      :title="dialogTitle"
+      :dialogVisible="dialogVisible"
+      :formItems="dialogFormItes"
+      :formData="dialogFormData"
+      @closeDialog="closeDialog"
+      @submitForm="submitForm"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { useUserList } from '@/service/api/user'
-import { userListItemType, userpParamsType } from './type'
+import { userListItemType, userParamsType } from './type'
 import ZTable from '@/components/table/z-table.vue'
 import ZForm from '@/components/form/z-form.vue'
+import ZDialog from '@/components/dialog/z-dialog.vue'
 import { tableColumnsType } from '@/components/table/type'
 import { formItemsType } from '@/components/form/type'
 import useSearch from '@/hooks/useSearch'
+import useDialog from '@/hooks/useDialog'
 
-const { state, formData, formRef, resetForm, resetPages } = useSearch<userpParamsType>({
+const initialSearch: userParamsType = {
   name: '',
   id: '',
   realname: '',
   cellphone: '',
   enable: '',
   updateAt: []
-})
+}
+
+const { searchParam, searchFormData, formRef, clone, resetForm, resetPages } =
+  useSearch<userParamsType>(initialSearch)
+
+const {
+  dialogRef,
+  dialogVisible,
+  dialogTitle,
+  dialogFormData,
+  closeDialog,
+  openDialog,
+  setDialogFormData
+} = useDialog<userListItemType>('用户')
 
 // 获取用户管理列表接口
-const { resultData: tableData, retry, loading, total } = useUserList<userListItemType[]>(state)
+const {
+  resultData: tableData,
+  retry,
+  loading,
+  total
+} = useUserList<userListItemType[]>(searchParam)
 
 // 点击搜索
 const handSubmitClick = () => {
   resetPages()
-  state.searchParmas = JSON.parse(JSON.stringify(formData))
+  searchParam.searchParmas = clone(searchFormData)
 }
 
 // 点击重置
 const handResetClick = () => {
-  resetPages()
   resetForm()
+  handSubmitClick()
 }
 
-const tableEdit = (row: userListItemType) => {}
+// 新增
+const tableAdd = () => {
+  openDialog('add')
+}
 
+// 编辑
+const tableEdit = (row: userListItemType) => {
+  setDialogFormData(clone(row))
+  openDialog('edit')
+}
+
+// 删除
 const tableDelete = (row: userListItemType) => {}
+
+// 表单提交
+const submitForm = () => {
+  console.log(dialogFormData.value)
+}
 
 const formItems: formItemsType[] = [
   {
@@ -150,6 +196,29 @@ const tableColumns: tableColumnsType[] = [
     align: 'center',
     width: '200',
     slotName: 'operations'
+  }
+]
+
+const dialogFormItes: formItemsType[] = [
+  {
+    type: 'input',
+    label: '用户ID',
+    prop: 'id'
+  },
+  {
+    type: 'input',
+    label: '用户名',
+    prop: 'name'
+  },
+  {
+    type: 'input',
+    label: '真实姓名',
+    prop: 'realname'
+  },
+  {
+    type: 'input',
+    label: '电话号码',
+    prop: 'cellphone'
   }
 ]
 </script>

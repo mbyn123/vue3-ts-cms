@@ -5,7 +5,9 @@
         <MenuBar :menuData="menuData" :defaultActive="defaultActive" :isCollapse="isCollapse" />
       </el-aside>
       <el-container class="page">
-        <el-header class="page-header"> <NavHeader :userInfo="userInfo" @clickCollapse="clickCollapse" /> </el-header>
+        <el-header class="page-header">
+          <NavHeader :userInfo="userInfo" @clickCollapse="clickCollapse" />
+        </el-header>
         <el-main class="page-content"><MainContent></MainContent></el-main>
       </el-container>
     </el-container>
@@ -107,7 +109,7 @@ watch(adminMenuData, (newValue) => {
 
 .el-main {
   color: #333;
-  text-align: center;
+  // text-align: center;
   background-color: #f0f2f5;
 }
 </style>

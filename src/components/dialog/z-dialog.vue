@@ -1,0 +1,54 @@
+<template>
+  <el-dialog
+    v-model="dialogVisible"
+    :title="title"
+    width="30%"
+    :close-on-click-modal="false"
+    :before-close="closeDialog"
+  >
+    <ZForm
+      mode="submit"
+      ref="formRef"
+      v-if="formItems"
+      :formItems="formItems"
+      :formData="formData"
+    />
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button type="primary" @click="submitForm">确定</el-button>
+        <el-button @click="closeDialog">取消</el-button>
+      </span>
+    </template>
+  </el-dialog>
+</template>
+
+<script lang="ts" setup>
+import ZForm from '@/components/form/z-form.vue'
+import { ref } from 'vue'
+import { formItemsType } from '../form/type'
+defineProps<{
+  title?: string
+  dialogVisible: boolean
+  formItems?: formItemsType[]
+  formData?: any
+}>()
+
+const emit = defineEmits(['closeDialog', 'submitForm'])
+
+const closeDialog = () => {
+  resetFields()
+  emit('closeDialog')
+}
+
+const submitForm = () => emit('submitForm')
+
+const formRef = ref()
+
+const resetFields = () => formRef.value.form.resetFields()
+
+const validate = () => formRef.value.form.validate()
+
+defineExpose({ validate })
+</script>
+
+<style lang="less" scoped></style>

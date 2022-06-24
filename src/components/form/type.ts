@@ -18,6 +18,10 @@ type commItemType = {
   placeholder?: string
 }
 
+export type modaType = 'search' | 'submit'
+
 export type formItemsType = (inputItemType | selectItemType | datePickerItemType) & commItemType
 
-export type labelColType = { xs: number; sm: number; md: number; lg: number; xl: number }
+export type labelColType =
+  | { xs: number; sm: number; md: number; lg: number; xl: number }
+  | { span: number }

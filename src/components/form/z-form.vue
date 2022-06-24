@@ -1,6 +1,6 @@
 <template>
   <div class="contaniner">
-    <el-form ref="form" inline :model="formData" :label-width="labelWidth || defaultLabelWidth">
+    <el-form ref="form" :model="formData" :label-width="labelWidth || defaultLabelWidth">
       <el-row>
         <template v-for="item in formItems" :key="item.prop">
           <el-col v-bind="labelColType || defaultLabelCol">
@@ -23,7 +23,7 @@
             </el-form-item>
           </el-col>
         </template>
-        <el-form-item label=" ">
+        <el-form-item label=" " v-if="mode === 'search'">
           <el-button type="primary" @click="clickSubmit">搜索</el-button>
           <el-button @click="clickResult">重置</el-button>
         </el-form-item>
@@ -34,8 +34,9 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import { formItemsType, labelColType } from './type'
-defineProps<{
+import { formItemsType, labelColType, modaType } from './type'
+const { mode } = defineProps<{
+  mode: modaType
   formItems: formItemsType[]
   labelWidth?: string
   labelCol?: labelColType
@@ -45,13 +46,18 @@ defineProps<{
 const emit = defineEmits(['handSubmitClick', 'handResetClick'])
 
 const defaultLabelWidth = '80px'
-const defaultLabelCol: labelColType = {
-  xl: 6,
-  lg: 8,
-  md: 12,
-  sm: 24,
-  xs: 24
-}
+const defaultLabelCol: labelColType =
+  mode === 'search'
+    ? {
+        xl: 6,
+        lg: 8,
+        md: 12,
+        sm: 24,
+        xs: 24
+      }
+    : {
+        span: 24
+      }
 const form = ref()
 
 const clickResult = () => {
