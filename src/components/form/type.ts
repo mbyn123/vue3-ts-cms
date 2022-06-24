@@ -1,3 +1,5 @@
+import { FormItemRule } from 'element-plus'
+
 type inputItemType = {
   type: 'input'
 }
@@ -16,6 +18,7 @@ type commItemType = {
   label: string
   prop: string
   placeholder?: string
+  rules?: FormItemRule | FormItemRule[]
 }
 
 export type modaType = 'search' | 'submit'

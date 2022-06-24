@@ -22,6 +22,7 @@ export default function useDialog<T>(title?: string, data?: T) {
 
   // 关闭对话框
   const closeDialog = () => {
+    dialogFormData.value = {}
     dialogVisible.value = false
   }
 

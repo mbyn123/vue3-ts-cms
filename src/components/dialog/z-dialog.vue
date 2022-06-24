@@ -6,14 +6,15 @@
     :close-on-click-modal="false"
     :before-close="closeDialog"
   >
+    <slot></slot>
     <ZForm
+      v-if="formItems"
       mode="submit"
       ref="formRef"
-      v-if="formItems"
       :formItems="formItems"
       :formData="formData"
     />
-    <template #footer>
+    <template #footer v-if="formItems">
       <span class="dialog-footer">
         <el-button type="primary" @click="submitForm">确定</el-button>
         <el-button @click="closeDialog">取消</el-button>
@@ -26,7 +27,7 @@
 import ZForm from '@/components/form/z-form.vue'
 import { ref } from 'vue'
 import { formItemsType } from '../form/type'
-defineProps<{
+const { formItems } = defineProps<{
   title?: string
   dialogVisible: boolean
   formItems?: formItemsType[]
@@ -36,7 +37,9 @@ defineProps<{
 const emit = defineEmits(['closeDialog', 'submitForm'])
 
 const closeDialog = () => {
-  resetFields()
+  if (formItems) {
+    resetFields()
+  }
   emit('closeDialog')
 }
 

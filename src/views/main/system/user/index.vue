@@ -35,9 +35,9 @@
       :dialogVisible="dialogVisible"
       :formItems="dialogFormItes"
       :formData="dialogFormData"
-      @closeDialog="closeDialog"
       @submitForm="submitForm"
-    />
+      @closeDialog="closeDialog"
+    ></ZDialog>
   </div>
 </template>
 
@@ -68,10 +68,12 @@ const {
   dialogRef,
   dialogVisible,
   dialogTitle,
+  dialogType,
   dialogFormData,
   closeDialog,
   openDialog,
-  setDialogFormData
+  setDialogFormData,
+  validateDialogForm
 } = useDialog<userListItemType>('用户')
 
 // 获取用户管理列表接口
@@ -109,8 +111,15 @@ const tableEdit = (row: userListItemType) => {
 const tableDelete = (row: userListItemType) => {}
 
 // 表单提交
-const submitForm = () => {
-  console.log(dialogFormData.value)
+const submitForm = async () => {
+  const valid = await validateDialogForm()
+  if (!valid) {
+    return
+  }
+  if (dialogType.value === 'add') {
+  }
+  if (dialogType.value === 'edit') {
+  }
 }
 
 const formItems: formItemsType[] = [
@@ -203,22 +212,26 @@ const dialogFormItes: formItemsType[] = [
   {
     type: 'input',
     label: '用户ID',
-    prop: 'id'
+    prop: 'id',
+    rules: [{ required: true, message: '请输入用户ID', trigger: 'blur' }]
   },
   {
     type: 'input',
     label: '用户名',
-    prop: 'name'
+    prop: 'name',
+    rules: [{ required: true, message: '请输入用户名', trigger: 'blur' }]
   },
   {
     type: 'input',
     label: '真实姓名',
-    prop: 'realname'
+    prop: 'realname',
+    rules: [{ required: true, message: '请输入真实姓名', trigger: 'blur' }]
   },
   {
     type: 'input',
     label: '电话号码',
-    prop: 'cellphone'
+    prop: 'cellphone',
+    rules: [{ required: true, message: '请输入电话号码', trigger: 'blur' }]
   }
 ]
 </script>

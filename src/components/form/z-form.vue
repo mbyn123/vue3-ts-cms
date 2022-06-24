@@ -4,7 +4,12 @@
       <el-row>
         <template v-for="item in formItems" :key="item.prop">
           <el-col v-bind="labelColType || defaultLabelCol">
-            <el-form-item :label="item.label" :prop="item.prop" style="width: 100%">
+            <el-form-item
+              :label="item.label"
+              :prop="item.prop"
+              style="width: 100%"
+              :rules="item.rules"
+            >
               <template v-if="item.type === 'input'">
                 <el-input v-model="formData[item.prop]" :placeholder="item.placeholder" />
               </template>

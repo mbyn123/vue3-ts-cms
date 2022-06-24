@@ -34,6 +34,7 @@ declare module '@vue/runtime-core' {
     Loading: typeof import('element-plus/es')['ElLoadingDirective']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ZDialog: typeof import('./src/components/dialog/z-dialog.vue')['default']
     ZForm: typeof import('./src/components/form/z-form.vue')['default']
     ZTable: typeof import('./src/components/table/z-table.vue')['default']
   }
