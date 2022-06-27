@@ -3,15 +3,17 @@ import { pageStateType } from '@/hooks/useSearch'
 import { watch } from 'vue'
 import service from '..'
 
-export const useUserList = <D, P>(data: pageStateType<P>) => {
+export const useDepartmentList = <D, P>(data: pageStateType<P>) => {
   const { run, ...rest } = useAsync<D>()
-  const request = () => service.post('/users/list', { ...data.searchParmas, ...data.page })
+  const request = () => service.post('/department/list', { ...data.page, ...data.searchParmas })
   watch(
     data,
     () => {
       run(request(), { retry: request })
     },
-    { immediate: true }
+    {
+      immediate: true
+    }
   )
   return { ...rest }
 }

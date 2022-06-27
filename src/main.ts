@@ -2,10 +2,9 @@ import { createApp } from 'vue'
 import 'normalize.css'
 import './assets/css/index.less'
 import App from './App.vue'
-import router from './router'
+import router, { mapMenusToRoutes } from './router'
 // import store from './store'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import { mapMenusToRoutes } from './utils'
 import { getCache } from './utils/cache'
 
 const app = createApp(App)

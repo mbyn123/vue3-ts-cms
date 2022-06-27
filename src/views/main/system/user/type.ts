@@ -1,5 +1,5 @@
 export type userListItemType = {
-  cellphone: number
+  cellphone: string
   createAt: string
   departmentId: number
   enable: number
@@ -8,6 +8,7 @@ export type userListItemType = {
   realname: string
   roleId: number
   updateAt: string
+  password: string
 }
 
 export type userParamsType = {
@@ -17,4 +18,14 @@ export type userParamsType = {
   cellphone?: string
   enable?: string
   updateAt?: []
+}
+
+export type submitFormType = {
+  id?: number
+  name: string
+  realname: string
+  password: string
+  cellphone: string
+  roleId: number
+  departmentId: number
 }

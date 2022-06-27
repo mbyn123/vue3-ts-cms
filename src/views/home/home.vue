@@ -22,7 +22,7 @@ import { ref, watch } from 'vue'
 import { useAdminMenu, useAdminUser } from '@/service/api/login'
 import { getCache, setCache } from '@/utils/cache'
 import { AdminUserType, MenuDataType } from './type'
-import { mapMenusToRoutes } from '@/utils'
+import { mapMenusToRoutes } from '@/router'
 
 const adminUserId = getCache('adminUserId')
 

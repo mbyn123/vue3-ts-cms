@@ -1,12 +1,16 @@
 import { FormItemRule } from 'element-plus'
 
 type inputItemType = {
-  type: 'input'
+  type: 'input' | 'password'
 }
 
+export type keySelectOptionsType = {
+  [k: string]: string | number
+}
 type selectItemType = {
   type: 'select'
-  options: Array<{ label: string; value: any }>
+  options: keySelectOptionsType[]
+  optionKey?: { label: keyof keySelectOptionsType; value: keyof keySelectOptionsType }
 }
 
 type datePickerItemType = {
@@ -19,6 +23,7 @@ type commItemType = {
   prop: string
   placeholder?: string
   rules?: FormItemRule | FormItemRule[]
+  isHidden?: boolean
 }
 
 export type modaType = 'search' | 'submit'

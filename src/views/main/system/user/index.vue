@@ -3,7 +3,7 @@
     <z-form
       mode="search"
       ref="formRef"
-      :formItems="formItems"
+      :formItems="searchFormItems"
       :formData="searchFormData"
       @handResetClick="handResetClick"
       @handSubmitClick="handSubmitClick"
@@ -12,7 +12,7 @@
     <z-table
       :tableData="tableData"
       :tableColumns="tableColumns"
-      v-model:page="searchParam.page"
+      v-model:page="searchData.page"
       :total="total"
       :loading="loading"
       showIndexColumn
@@ -34,7 +34,7 @@
       :title="dialogTitle"
       :dialogVisible="dialogVisible"
       :formItems="dialogFormItes"
-      :formData="dialogFormData"
+      v-model:formData="dialogFormData"
       @submitForm="submitForm"
       @closeDialog="closeDialog"
     ></ZDialog>
@@ -43,14 +43,19 @@
 
 <script lang="ts" setup>
 import { useUserList } from '@/service/api/user'
-import { userListItemType, userParamsType } from './type'
+import { submitFormType, userListItemType, userParamsType } from './type'
 import ZTable from '@/components/table/z-table.vue'
 import ZForm from '@/components/form/z-form.vue'
 import ZDialog from '@/components/dialog/z-dialog.vue'
-import { tableColumnsType } from '@/components/table/type'
-import { formItemsType } from '@/components/form/type'
 import useSearch from '@/hooks/useSearch'
 import useDialog from '@/hooks/useDialog'
+import { useDepartmentList } from '@/service/api/department'
+import { departmentListType } from '../department/type'
+import { reactive, watch } from 'vue'
+import { setFormItemsState, setSelectOptionData } from '@/utils'
+import { useRoleList } from '@/service/api/role'
+import { roleListType } from '../role/type'
+import useUserConfig from './useUserConfig'
 
 const initialSearch: userParamsType = {
   name: '',
@@ -61,7 +66,20 @@ const initialSearch: userParamsType = {
   updateAt: []
 }
 
-const { searchParam, searchFormData, formRef, clone, resetForm, resetPages } =
+const initialSubmit: submitFormType = {
+  name: '',
+  realname: '',
+  password: '',
+  cellphone: '',
+  roleId: 0,
+  departmentId: 0
+}
+
+const defautlPageData = reactive({
+  page: { offset: 1, size: 100 }
+})
+
+const { searchData, searchFormData, formRef, clone, resetForm, resetPages } =
   useSearch<userParamsType>(initialSearch)
 
 const {
@@ -70,11 +88,14 @@ const {
   dialogTitle,
   dialogType,
   dialogFormData,
+  filterFiles,
   closeDialog,
   openDialog,
   setDialogFormData,
   validateDialogForm
-} = useDialog<userListItemType>('用户')
+} = useDialog<submitFormType>('用户', initialSubmit)
+
+const { searchFormItems, tableColumns, dialogFormItes } = useUserConfig(dialogFormData.value)
 
 // 获取用户管理列表接口
 const {
@@ -82,12 +103,36 @@ const {
   retry,
   loading,
   total
-} = useUserList<userListItemType[]>(searchParam)
+} = useUserList<userListItemType[], userParamsType>(searchData)
+
+// 获取部门列表接口
+const { resultData: departmentData, resultCode: departmentCode } = useDepartmentList<
+  departmentListType[],
+  object
+>(defautlPageData)
+
+// 获取角色列表接口
+const { resultData: roleData, resultCode: roleCode } = useRoleList<roleListType[], object>(
+  defautlPageData
+)
+
+watch([departmentCode, roleCode], (code) => {
+  if (code[0] === 0 && departmentData.value) {
+    setSelectOptionData<departmentListType[]>(dialogFormItes, 'departmentId', departmentData.value)
+  }
+  if (code[1] === 0 && roleData.value) {
+    setSelectOptionData<roleListType[]>(dialogFormItes, 'roleId', roleData.value)
+  }
+})
+
+const setFormItemHidden = (state: boolean) => {
+  setFormItemsState(dialogFormItes, ['password', 'newpassword'], state)
+}
 
 // 点击搜索
 const handSubmitClick = () => {
   resetPages()
-  searchParam.searchParmas = clone(searchFormData)
+  searchData.searchParmas = clone(searchFormData.value)
 }
 
 // 点击重置
@@ -98,12 +143,14 @@ const handResetClick = () => {
 
 // 新增
 const tableAdd = () => {
+  setFormItemHidden(false)
   openDialog('add')
 }
 
 // 编辑
 const tableEdit = (row: userListItemType) => {
-  setDialogFormData(clone(row))
+  setFormItemHidden(true)
+  setDialogFormData(clone(filterFiles(row, dialogFormItes)))
   openDialog('edit')
 }
 
@@ -112,6 +159,8 @@ const tableDelete = (row: userListItemType) => {}
 
 // 表单提交
 const submitForm = async () => {
+  console.log(dialogFormData.value, 'dialogFormData')
+
   const valid = await validateDialogForm()
   if (!valid) {
     return
@@ -121,119 +170,6 @@ const submitForm = async () => {
   if (dialogType.value === 'edit') {
   }
 }
-
-const formItems: formItemsType[] = [
-  {
-    type: 'input',
-    label: '用户ID',
-    prop: 'id'
-  },
-  {
-    type: 'input',
-    label: '用户名',
-    prop: 'name'
-  },
-  {
-    type: 'input',
-    label: '真实姓名',
-    prop: 'realname'
-  },
-  {
-    type: 'input',
-    label: '电话号码',
-    prop: 'cellphone'
-  },
-  {
-    type: 'select',
-    label: '用户状态',
-    prop: 'enable',
-    options: [
-      { label: '全部', value: '' },
-      { label: '启用', value: 1 },
-      { label: '禁用', value: 0 }
-    ]
-  },
-  {
-    type: 'datePicker',
-    label: '创建时间',
-    prop: 'updateAt',
-    pickerType: 'daterange'
-  }
-]
-
-const tableColumns: tableColumnsType[] = [
-  {
-    prop: 'name',
-    label: '用户名',
-    align: 'center',
-    width: ''
-  },
-  {
-    prop: 'realname',
-    label: '真实姓名',
-    align: 'center',
-    width: ''
-  },
-  {
-    prop: 'cellphone',
-    label: '手机号码',
-    align: 'center',
-    width: ''
-  },
-  {
-    prop: 'enable',
-    label: '状态',
-    width: '100',
-    align: 'center',
-    slotName: 'enable'
-  },
-  {
-    prop: 'createAt',
-    label: '创建时间',
-    align: 'center',
-    width: ''
-  },
-  {
-    prop: 'updateAt',
-    label: '更新时间',
-    align: 'center',
-    width: ''
-  },
-  {
-    prop: '',
-    label: '操作',
-    align: 'center',
-    width: '200',
-    slotName: 'operations'
-  }
-]
-
-const dialogFormItes: formItemsType[] = [
-  {
-    type: 'input',
-    label: '用户ID',
-    prop: 'id',
-    rules: [{ required: true, message: '请输入用户ID', trigger: 'blur' }]
-  },
-  {
-    type: 'input',
-    label: '用户名',
-    prop: 'name',
-    rules: [{ required: true, message: '请输入用户名', trigger: 'blur' }]
-  },
-  {
-    type: 'input',
-    label: '真实姓名',
-    prop: 'realname',
-    rules: [{ required: true, message: '请输入真实姓名', trigger: 'blur' }]
-  },
-  {
-    type: 'input',
-    label: '电话号码',
-    prop: 'cellphone',
-    rules: [{ required: true, message: '请输入电话号码', trigger: 'blur' }]
-  }
-]
 </script>
 
 <style lang="less" scoped></style>

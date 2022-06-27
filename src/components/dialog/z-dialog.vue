@@ -25,16 +25,16 @@
 
 <script lang="ts" setup>
 import ZForm from '@/components/form/z-form.vue'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { formItemsType } from '../form/type'
-const { formItems } = defineProps<{
+const { formItems, formData } = defineProps<{
   title?: string
   dialogVisible: boolean
   formItems?: formItemsType[]
   formData?: any
 }>()
 
-const emit = defineEmits(['closeDialog', 'submitForm'])
+const emit = defineEmits(['closeDialog', 'submitForm', 'update:formData'])
 
 const closeDialog = () => {
   if (formItems) {
@@ -47,7 +47,10 @@ const submitForm = () => emit('submitForm')
 
 const formRef = ref()
 
-const resetFields = () => formRef.value.form.resetFields()
+const resetFields = () => {
+  formRef.value.form.resetFields()
+  emit('update:formData', formData)
+}
 
 const validate = () => formRef.value.form.validate()
 

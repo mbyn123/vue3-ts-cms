@@ -9,9 +9,17 @@
               :prop="item.prop"
               style="width: 100%"
               :rules="item.rules"
+              v-if="!item.isHidden"
             >
               <template v-if="item.type === 'input'">
                 <el-input v-model="formData[item.prop]" :placeholder="item.placeholder" />
+              </template>
+              <template v-if="item.type === 'password'">
+                <el-input
+                  v-model="formData[item.prop]"
+                  type="password"
+                  :placeholder="item.placeholder"
+                />
               </template>
               <template v-if="item.type === 'select'">
                 <el-select
@@ -19,7 +27,17 @@
                   :placeholder="item.placeholder"
                   style="width: 100%"
                 >
-                  <el-option v-for="option in item.options" :key="option.label" v-bind="option" />
+                  <template v-if="item.optionKey">
+                    <el-option
+                      v-for="option in item.options"
+                      :key="option.label"
+                      :label="option[item.optionKey.label]"
+                      :value="option[item.optionKey.value]"
+                    />
+                  </template>
+                  <template v-else>
+                    <el-option v-for="option in item.options" :key="option.label" v-bind="option" />
+                  </template>
                 </el-select>
               </template>
               <template v-if="item.type === 'datePicker'">

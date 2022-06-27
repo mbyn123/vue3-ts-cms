@@ -1,36 +1,17 @@
-import router from '@/router'
-import { MenuDataType } from '@/views/home/type'
-import { RouteRecordRaw } from 'vue-router'
-import { setCache } from './cache'
+import { formItemsType, keySelectOptionsType } from '@/components/form/type'
 
-export const mapMenusToRoutes = (menu: MenuDataType) => {
-  const routes: RouteRecordRaw[] = []
-  const renderRouter = (menu: MenuDataType) => {
-    if (!menu || (menu && !menu.length)) {
-      return
+export const setSelectOptionData = <T>(formItems: formItemsType[], key: string, data: T) => {
+  return formItems.forEach((i) => {
+    if (i.type === 'select' && i.prop === key) {
+      i.options = data as unknown as keySelectOptionsType[]
     }
-    menu.forEach((key) => {
-      if (key.children) {
-        renderRouter(key.children)
-      }
-      if (!key.url) {
-        return
-      }
-      const { url, name } = key
-      routes.push({
-        path: url,
-        name,
-        component: () => import(`@/views${url}/index.vue`)
-      })
-    })
-  }
-  renderRouter(menu)
-  if (routes.length) {
-    routes.forEach((item) => router.addRoute('main', item))
-    setCache('defaultActive', routes[0].path)
-  } else {
-    router.push({
-      path: '/login'
-    })
-  }
+  })
+}
+
+export const setFormItemsState = (formItems: formItemsType[], keys: string[], state: boolean) => {
+  return formItems.forEach((i) => {
+    if (keys.includes(i.prop)) {
+      i.isHidden = state
+    }
+  })
 }
