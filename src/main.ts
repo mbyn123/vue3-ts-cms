@@ -7,12 +7,12 @@ import router, { mapMenusToRoutes } from './router'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { getCache } from './utils/cache'
 
+mapMenusToRoutes(getCache('adminMenuData'))
+
 const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
-mapMenusToRoutes(getCache('adminMenuData'))
-
 // app.use(store)
 app.use(router)
 app.mount('#app')

@@ -1,7 +1,6 @@
 import { ref, UnwrapRef, watch } from 'vue'
 import ZDialog from '@/components/dialog/z-dialog.vue'
 import { iDialogType } from '@/components/dialog/type'
-import { formItemsType } from '@/components/form/type'
 
 export default function useDialog<T>(title: string, data: T) {
   const dialogRef = ref<InstanceType<typeof ZDialog>>()
@@ -21,19 +20,10 @@ export default function useDialog<T>(title: string, data: T) {
     dialogVisible.value = true
   }
 
-  const filterFiles = (value: any, files: formItemsType[]) => {
-    let obj: any = {}
-    files
-      .filter((item) => !item.isHidden)
-      .map((item) => item.prop)
-      .map((item) => {
-        obj[item] = value[item]
-      })
-    return obj
-  }
-
   // 关闭对话框
-  const closeDialog = () => (dialogVisible.value = false)
+  const closeDialog = () => {
+    dialogVisible.value = false
+  }
 
   // 设置标题
   const setDialogTitle = (value: string) => (dialogTitle.value = value)
@@ -53,7 +43,6 @@ export default function useDialog<T>(title: string, data: T) {
     dialogType,
     dialogTitle,
     dialogFormData,
-    filterFiles,
     setDialogFormData,
     openDialog,
     closeDialog,

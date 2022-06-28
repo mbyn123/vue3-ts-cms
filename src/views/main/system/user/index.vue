@@ -31,9 +31,11 @@
     </z-table>
     <ZDialog
       ref="dialogRef"
+      destroy
       :title="dialogTitle"
       :dialogVisible="dialogVisible"
       :formItems="dialogFormItes"
+      :confirmLoading="addLoading || editLoading"
       v-model:formData="dialogFormData"
       @submitForm="submitForm"
       @closeDialog="closeDialog"
@@ -42,8 +44,8 @@
 </template>
 
 <script lang="ts" setup>
-import { useUserList } from '@/service/api/user'
-import { submitFormType, userListItemType, userParamsType } from './type'
+import { useAddUser, useDeleteUser, useEditUser, useUserList } from '@/service/api/user'
+import { resultType, submitFormType, userListItemType, userParamsType } from './type'
 import ZTable from '@/components/table/z-table.vue'
 import ZForm from '@/components/form/z-form.vue'
 import ZDialog from '@/components/dialog/z-dialog.vue'
@@ -56,6 +58,7 @@ import { setFormItemsState, setSelectOptionData } from '@/utils'
 import { useRoleList } from '@/service/api/role'
 import { roleListType } from '../role/type'
 import useUserConfig from './useUserConfig'
+import { ElMessageBox } from 'element-plus'
 
 const initialSearch: userParamsType = {
   name: '',
@@ -71,8 +74,8 @@ const initialSubmit: submitFormType = {
   realname: '',
   password: '',
   cellphone: '',
-  roleId: 0,
-  departmentId: 0
+  roleId: '',
+  departmentId: ''
 }
 
 const defautlPageData = reactive({
@@ -88,7 +91,6 @@ const {
   dialogTitle,
   dialogType,
   dialogFormData,
-  filterFiles,
   closeDialog,
   openDialog,
   setDialogFormData,
@@ -104,6 +106,15 @@ const {
   loading,
   total
 } = useUserList<userListItemType[], userParamsType>(searchData)
+
+// 新增用户接口
+const { mutate: addUser, loading: addLoading } = useAddUser<resultType, submitFormType>()
+
+// 修改用户接口
+const { mutate: editUser, loading: editLoading } = useEditUser<resultType, submitFormType>()
+
+// 删除用户接口
+const { mutate: deleteUser } = useDeleteUser<resultType>()
 
 // 获取部门列表接口
 const { resultData: departmentData, resultCode: departmentCode } = useDepartmentList<
@@ -149,25 +160,44 @@ const tableAdd = () => {
 
 // 编辑
 const tableEdit = (row: userListItemType) => {
+  const { createAt, updateAt, enable, ...rest } = row
   setFormItemHidden(true)
-  setDialogFormData(clone(filterFiles(row, dialogFormItes)))
+  setDialogFormData({ ...rest })
   openDialog('edit')
 }
 
 // 删除
-const tableDelete = (row: userListItemType) => {}
+const tableDelete = async (row: userListItemType) => {
+  const res = await ElMessageBox.confirm('确认删除当前用户?', '删除用户', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).catch((err) => err)
+
+  if (res === 'confirm') {
+    await deleteUser(row.id, () => retry.value())
+  }
+}
 
 // 表单提交
 const submitForm = async () => {
-  console.log(dialogFormData.value, 'dialogFormData')
-
   const valid = await validateDialogForm()
   if (!valid) {
     return
   }
+  const callback = () => {
+    closeDialog()
+    retry.value()
+  }
+  console.log(dialogType.value)
+
   if (dialogType.value === 'add') {
+    const { newpassword, ...rest } = dialogFormData.value
+    addUser({ ...rest }, callback)
   }
   if (dialogType.value === 'edit') {
+    const { id, ...rest } = dialogFormData.value
+    id && editUser(id, { ...rest }, callback)
   }
 }
 </script>

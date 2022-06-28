@@ -36,7 +36,7 @@ export const useAsync = <D>() => {
         if (res.code !== 0) {
           loading.value = false
           return ElMessage({
-            message: '请求异常',
+            message: (res.data as unknown as string) || '请求异常',
             type: 'error'
           })
         }
@@ -50,6 +50,9 @@ export const useAsync = <D>() => {
           resultData.value = res.data
         }
         if (config) {
+          if (config.callback) {
+            config.callback()
+          }
           if (config.successMessage) {
             ElMessage({
               message: config.successMessage,

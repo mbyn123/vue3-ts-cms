@@ -56,6 +56,7 @@
 </template>
 
 <script lang="ts" setup>
+import { FormInstance } from 'element-plus'
 import { ref } from 'vue'
 import { formItemsType, labelColType, modaType } from './type'
 const { mode } = defineProps<{
@@ -81,7 +82,7 @@ const defaultLabelCol: labelColType =
     : {
         span: 24
       }
-const form = ref()
+const form = ref<FormInstance>()
 
 const clickResult = () => {
   emit('handResetClick')

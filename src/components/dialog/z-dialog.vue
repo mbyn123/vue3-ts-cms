@@ -2,9 +2,10 @@
   <el-dialog
     v-model="dialogVisible"
     :title="title"
-    width="30%"
+    :width="width || '30%'"
     :close-on-click-modal="false"
-    :before-close="closeDialog"
+    :destroy-on-close="destroy"
+    @close="closeDialog"
   >
     <slot></slot>
     <ZForm
@@ -16,7 +17,7 @@
     />
     <template #footer v-if="formItems">
       <span class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确定</el-button>
+        <el-button type="primary" @click="submitForm" v-loading="confirmLoading">确定</el-button>
         <el-button @click="closeDialog">取消</el-button>
       </span>
     </template>
@@ -27,32 +28,42 @@
 import ZForm from '@/components/form/z-form.vue'
 import { ref, watch } from 'vue'
 import { formItemsType } from '../form/type'
-const { formItems, formData } = defineProps<{
+
+const props = defineProps<{
+  width?: string | number
   title?: string
   dialogVisible: boolean
   formItems?: formItemsType[]
   formData?: any
+  confirmLoading?: boolean
+  destroy?: boolean
 }>()
 
 const emit = defineEmits(['closeDialog', 'submitForm', 'update:formData'])
 
+const formRef = ref<InstanceType<typeof ZForm>>()
+
+const formOriginData: any = {}
+
+for (const key in props.formData) {
+  formOriginData[key] = props.formData[key]
+}
+
+// 关闭弹窗
 const closeDialog = () => {
-  if (formItems) {
-    resetFields()
+  if (props.formItems) {
+    reset()
+    emit('update:formData', { ...formOriginData })
   }
   emit('closeDialog')
 }
 
+// 确认
 const submitForm = () => emit('submitForm')
 
-const formRef = ref()
+const reset = () => formRef.value?.form?.resetFields()
 
-const resetFields = () => {
-  formRef.value.form.resetFields()
-  emit('update:formData', formData)
-}
-
-const validate = () => formRef.value.form.validate()
+const validate = () => formRef.value?.form?.validate()
 
 defineExpose({ validate })
 </script>

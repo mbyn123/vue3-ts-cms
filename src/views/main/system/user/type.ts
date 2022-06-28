@@ -1,12 +1,12 @@
 export type userListItemType = {
   cellphone: string
   createAt: string
-  departmentId: number
+  departmentId: string
   enable: number
   id: number
   name: string
   realname: string
-  roleId: number
+  roleId: string
   updateAt: string
   password: string
 }
@@ -25,7 +25,12 @@ export type submitFormType = {
   name: string
   realname: string
   password: string
+  newpassword?: string
   cellphone: string
-  roleId: number
-  departmentId: number
+  roleId: string
+  departmentId: string
+}
+
+export type resultType = {
+  data: string
 }

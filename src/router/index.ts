@@ -15,7 +15,6 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/main',
     name: 'main',
-    // redirect: getCache('defaultActive'),
     component: () => import('@/views/home/home.vue')
   },
   {

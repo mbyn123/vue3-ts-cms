@@ -2,6 +2,7 @@ import { formItemsType } from '@/components/form/type'
 import { tableColumnsType } from '@/components/table/type'
 import { reactive } from 'vue'
 import { submitFormType } from './type'
+import { InternalRuleItem, Value, Values, ValidateOption } from 'async-validator/dist-types'
 
 const useUserConfig = (dialogFormData: submitFormType) => {
   const searchFormItems: formItemsType[] = [
@@ -89,11 +90,30 @@ const useUserConfig = (dialogFormData: submitFormType) => {
     }
   ]
 
-  const validator = (rule: any, value: any, callback: (err?: Error) => void) => {
+  const validatorPass = (
+    rule: InternalRuleItem,
+    value: Value,
+    callback: (err?: string | Error) => void
+  ) => {
     if (value === '') {
       callback(new Error('请输入密码'))
     } else if (value !== dialogFormData.password) {
       callback(new Error('两次密码输入不一致'))
+    } else {
+      callback()
+    }
+  }
+
+  const validatorPhone = (
+    rule: InternalRuleItem,
+    value: Value,
+    callback: (err?: string | Error) => void
+  ) => {
+    const res = /^[1][2,3,4,5,6,7,8,9][0-9]{9}$/
+    if (value === '') {
+      callback(new Error('请输入手机号'))
+    } else if (!res.test(value)) {
+      callback(new Error('手机号格式不正确'))
     } else {
       callback()
     }
@@ -120,7 +140,10 @@ const useUserConfig = (dialogFormData: submitFormType) => {
       prop: 'password',
       placeholder: '请输入密码',
       isHidden: false,
-      rules: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+      rules: [
+        { required: true, message: '请输入密码', trigger: 'blur' },
+        { min: 6, message: '密码最少6位数', trigger: 'blur' }
+      ]
     },
     {
       type: 'password',
@@ -128,14 +151,14 @@ const useUserConfig = (dialogFormData: submitFormType) => {
       prop: 'newpassword',
       placeholder: '请输入确认密码',
       isHidden: false,
-      rules: [{ required: true, validator: validator, trigger: 'blur' }]
+      rules: [{ required: true, validator: validatorPass, trigger: 'blur' }]
     },
     {
       type: 'input',
       label: '电话号码',
       prop: 'cellphone',
       placeholder: '请输入电话号码',
-      rules: [{ required: true, message: '请输入电话号码', trigger: 'blur' }]
+      rules: [{ required: true, validator: validatorPhone, trigger: 'blur' }]
     },
     {
       type: 'select',
