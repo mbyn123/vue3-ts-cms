@@ -30,7 +30,3 @@ export type submitFormType = {
   roleId: string
   departmentId: string
 }
-
-export type resultType = {
-  data: string
-}

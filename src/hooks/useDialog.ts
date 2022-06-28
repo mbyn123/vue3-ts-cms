@@ -1,6 +1,7 @@
 import { ref, UnwrapRef, watch } from 'vue'
 import ZDialog from '@/components/dialog/z-dialog.vue'
 import { iDialogType } from '@/components/dialog/type'
+import { ElMessageBox } from 'element-plus'
 
 export default function useDialog<T>(title: string, data: T) {
   const dialogRef = ref<InstanceType<typeof ZDialog>>()
@@ -37,12 +38,22 @@ export default function useDialog<T>(title: string, data: T) {
   // 表单验证
   const validateDialogForm = () => dialogRef.value.validate()
 
+  // 确认弹窗
+  const confirmBox = (subTitle: string, title: string) => {
+    return ElMessageBox.confirm(subTitle, title, {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).catch((err) => err)
+  }
+
   return {
     dialogRef,
     dialogVisible,
     dialogType,
     dialogTitle,
     dialogFormData,
+    confirmBox,
     setDialogFormData,
     openDialog,
     closeDialog,

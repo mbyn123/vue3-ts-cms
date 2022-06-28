@@ -1,16 +1,6 @@
 <template>
   <div>
-    <el-form :model="form" ref="ruleFormRef">
-      <el-form-item prop="name">
-        <el-input v-model="form.name" />
-      </el-form-item>
-      <el-form-item prop="ss">
-        <el-input v-model="form.ss" />
-      </el-form-item>
-      <el-form-item>
-        <el-button @click="resest">Cancel</el-button>
-      </el-form-item>
-    </el-form>
+    <el-button type="primary" icon="Plus" @click="tableAdd">新增</el-button>
     <z-table
       :tableData="tableData"
       :tableColumns="tableColumns"
@@ -19,11 +9,6 @@
       :loading="loading"
       showIndexColumn
     >
-      <template #enable="scope">
-        <el-button plain :type="scope.row.enable ? 'success' : 'danger'">
-          {{ scope.row.enable ? '启用' : '禁用' }}
-        </el-button>
-      </template>
       <template #operations="scope">
         <div>
           <el-button plain type="primary" @click="tableEdit(scope.row)">编辑</el-button>
@@ -31,32 +16,52 @@
         </div>
       </template>
     </z-table>
+    <ZDialog
+      ref="dialogRef"
+      :title="dialogTitle"
+      :dialogVisible="dialogVisible"
+      :formItems="dialogFormItes"
+      :confirmLoading="addLoading || editLoading"
+      v-model:formData="dialogFormData"
+      @submitForm="submitForm"
+      @closeDialog="closeDialog"
+    ></ZDialog>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { tableColumnsType } from '@/components/table/type'
+import { resultType } from '@/hooks/useAsync'
+import useDialog from '@/hooks/useDialog'
 import useSearch from '@/hooks/useSearch'
-import { useDepartmentList } from '@/service/api/department'
-import { FormInstance } from 'element-plus'
-import { ref } from 'vue'
-import { reactive } from 'vue-demi'
-import { departmentListType } from './type'
+import {
+  useAddDepartment,
+  useDeleteDepartment,
+  useDepartmentList,
+  useEditDepartment
+} from '@/service/api/department'
+import { departmentListType, departmentSubmitType } from './type'
+import useDepartmentConfig from './useDepartmentConfig'
+
+const { tableColumns, dialogFormItes } = useDepartmentConfig()
 
 const { searchData } = useSearch({})
-const ruleFormRef = ref<FormInstance>()
 
-const form = reactive({
+const {
+  dialogRef,
+  dialogVisible,
+  dialogTitle,
+  dialogType,
+  dialogFormData,
+  confirmBox,
+  closeDialog,
+  openDialog,
+  setDialogFormData,
+  validateDialogForm
+} = useDialog<departmentSubmitType>('部门', {
   name: '',
-  ss: ''
+  parentId: 1,
+  leader: ''
 })
-
-const resest = () => {
-  if (ruleFormRef.value) {
-    ruleFormRef.value.resetFields()
-    console.log(form, 'f')
-  }
-}
 
 // 获取部门列表接口
 const {
@@ -66,37 +71,54 @@ const {
   total
 } = useDepartmentList<departmentListType[], object>(searchData)
 
-const tableEdit = (row: departmentListType) => {}
+const { mutate: addDepartment, loading: addLoading } = useAddDepartment<
+  resultType,
+  departmentSubmitType
+>()
 
-const tableDelete = (row: departmentListType) => {}
+const { mutate: editDepartment, loading: editLoading } = useEditDepartment<
+  resultType,
+  departmentSubmitType
+>()
 
-const tableColumns: tableColumnsType[] = [
-  {
-    prop: 'name',
-    label: '部门名称',
-    align: 'center',
-    width: ''
-  },
-  {
-    prop: 'createAt',
-    label: '创建时间',
-    align: 'center',
-    width: ''
-  },
-  {
-    prop: 'updateAt',
-    label: '更新时间',
-    align: 'center',
-    width: ''
-  },
-  {
-    prop: '',
-    label: '操作',
-    align: 'center',
-    width: '200',
-    slotName: 'operations'
+const { mutate: deleteDepartment } = useDeleteDepartment<resultType>()
+
+const tableAdd = () => {
+  openDialog('add')
+}
+
+const tableEdit = (row: departmentListType) => {
+  const { name, leader, parentId, id } = row
+  openDialog('edit')
+  setDialogFormData({ name, leader, parentId, id })
+}
+
+const tableDelete = async (row: departmentListType) => {
+  const res = await confirmBox('确认删除当前部门吗?', '删除部门')
+  if (res === 'confirm') {
+    await deleteDepartment(row.id, () => retry.value())
   }
-]
+}
+
+const submitForm = async () => {
+  const vaild = await validateDialogForm()
+  if (!vaild) {
+    return
+  }
+  const callback = () => {
+    closeDialog()
+    retry.value()
+  }
+  console.log(dialogType.value)
+
+  if (dialogType.value === 'add') {
+    addDepartment(dialogFormData.value, callback)
+  }
+  if (dialogType.value === 'edit') {
+    const { id, ...rest } = dialogFormData.value
+    id && editDepartment(id, { ...rest }, callback)
+  }
+}
 </script>
 
 <style lang="less" scoped></style>

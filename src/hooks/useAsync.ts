@@ -14,6 +14,10 @@ type configType<D> = {
   // callMsg?: boolean
 }
 
+export type resultType = {
+  code: number
+}
+
 export const useAsync = <D>() => {
   const loading = ref(false)
   const resultData = ref<D>()

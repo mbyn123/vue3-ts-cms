@@ -6,3 +6,10 @@ export type departmentListType = {
   parentId: number
   updateAt: string
 }
+
+export type departmentSubmitType = {
+  name: string
+  parentId: number
+  leader: string
+  id?: number
+}

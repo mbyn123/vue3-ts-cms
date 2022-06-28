@@ -45,20 +45,20 @@
 
 <script lang="ts" setup>
 import { useAddUser, useDeleteUser, useEditUser, useUserList } from '@/service/api/user'
-import { resultType, submitFormType, userListItemType, userParamsType } from './type'
+import { submitFormType, userListItemType, userParamsType } from './type'
 import ZTable from '@/components/table/z-table.vue'
 import ZForm from '@/components/form/z-form.vue'
 import ZDialog from '@/components/dialog/z-dialog.vue'
 import useSearch from '@/hooks/useSearch'
 import useDialog from '@/hooks/useDialog'
+import useUserConfig from './useUserConfig'
 import { useDepartmentList } from '@/service/api/department'
 import { departmentListType } from '../department/type'
 import { reactive, watch } from 'vue'
 import { setFormItemsState, setSelectOptionData } from '@/utils'
 import { useRoleList } from '@/service/api/role'
 import { roleListType } from '../role/type'
-import useUserConfig from './useUserConfig'
-import { ElMessageBox } from 'element-plus'
+import { resultType } from '@/hooks/useAsync'
 
 const initialSearch: userParamsType = {
   name: '',
@@ -91,6 +91,7 @@ const {
   dialogTitle,
   dialogType,
   dialogFormData,
+  confirmBox,
   closeDialog,
   openDialog,
   setDialogFormData,
@@ -168,12 +169,7 @@ const tableEdit = (row: userListItemType) => {
 
 // 删除
 const tableDelete = async (row: userListItemType) => {
-  const res = await ElMessageBox.confirm('确认删除当前用户?', '删除用户', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  }).catch((err) => err)
-
+  const res = await confirmBox('确认删除当前用户吗?', '删除用户')
   if (res === 'confirm') {
     await deleteUser(row.id, () => retry.value())
   }
