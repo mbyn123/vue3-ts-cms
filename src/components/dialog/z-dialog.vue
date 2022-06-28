@@ -17,7 +17,9 @@
     />
     <template #footer v-if="formItems">
       <span class="dialog-footer">
-        <el-button type="primary" @click="submitForm" v-loading="confirmLoading">确定</el-button>
+        <el-button type="primary" v-loading="confirmLoading" v-debounce="submitForm"
+          >确定</el-button
+        >
         <el-button @click="closeDialog">取消</el-button>
       </span>
     </template>
