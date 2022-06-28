@@ -119,7 +119,7 @@ const useUserConfig = (dialogFormData: submitFormType) => {
     }
   }
 
-  const dialogFormItes = reactive<formItemsType[]>([
+  const dialogFormItems = reactive<formItemsType[]>([
     {
       type: 'input',
       label: '用户名',
@@ -183,7 +183,7 @@ const useUserConfig = (dialogFormData: submitFormType) => {
   return {
     searchFormItems,
     tableColumns,
-    dialogFormItes
+    dialogFormItems
   }
 }
 

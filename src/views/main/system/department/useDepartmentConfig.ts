@@ -36,7 +36,7 @@ export default function useDepartmentConfig() {
     }
   ]
 
-  const dialogFormItes: formItemsType[] = [
+  const dialogFormItems: formItemsType[] = [
     {
       type: 'input',
       label: '部门名称',
@@ -55,6 +55,6 @@ export default function useDepartmentConfig() {
 
   return {
     tableColumns,
-    dialogFormItes
+    dialogFormItems
   }
 }

@@ -20,7 +20,7 @@
       ref="dialogRef"
       :title="dialogTitle"
       :dialogVisible="dialogVisible"
-      :formItems="dialogFormItes"
+      :formItems="dialogFormItems"
       :confirmLoading="addLoading || editLoading"
       v-model:formData="dialogFormData"
       @submitForm="submitForm"
@@ -42,7 +42,7 @@ import {
 import { departmentListType, departmentSubmitType } from './type'
 import useDepartmentConfig from './useDepartmentConfig'
 
-const { tableColumns, dialogFormItes } = useDepartmentConfig()
+const { tableColumns, dialogFormItems } = useDepartmentConfig()
 
 const { searchData } = useSearch({})
 

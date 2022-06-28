@@ -8,3 +8,9 @@ export type roleListType = {
   updateAt: string
   menuList: MenuDataItemType[]
 }
+
+export type roleSearchParamType = {
+  name: string
+  intro: string
+  createAt: string
+}

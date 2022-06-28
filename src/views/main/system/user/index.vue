@@ -34,7 +34,7 @@
       destroy
       :title="dialogTitle"
       :dialogVisible="dialogVisible"
-      :formItems="dialogFormItes"
+      :formItems="dialogFormItems"
       :confirmLoading="addLoading || editLoading"
       v-model:formData="dialogFormData"
       @submitForm="submitForm"
@@ -98,7 +98,7 @@ const {
   validateDialogForm
 } = useDialog<submitFormType>('用户', initialSubmit)
 
-const { searchFormItems, tableColumns, dialogFormItes } = useUserConfig(dialogFormData.value)
+const { searchFormItems, tableColumns, dialogFormItems } = useUserConfig(dialogFormData.value)
 
 // 获取用户管理列表接口
 const {
@@ -130,15 +130,15 @@ const { resultData: roleData, resultCode: roleCode } = useRoleList<roleListType[
 
 watch([departmentCode, roleCode], (code) => {
   if (code[0] === 0 && departmentData.value) {
-    setSelectOptionData<departmentListType[]>(dialogFormItes, 'departmentId', departmentData.value)
+    setSelectOptionData<departmentListType[]>(dialogFormItems, 'departmentId', departmentData.value)
   }
   if (code[1] === 0 && roleData.value) {
-    setSelectOptionData<roleListType[]>(dialogFormItes, 'roleId', roleData.value)
+    setSelectOptionData<roleListType[]>(dialogFormItems, 'roleId', roleData.value)
   }
 })
 
 const setFormItemHidden = (state: boolean) => {
-  setFormItemsState(dialogFormItes, ['password', 'newpassword'], state)
+  setFormItemsState(dialogFormItems, ['password', 'newpassword'], state)
 }
 
 // 点击搜索
@@ -185,8 +185,6 @@ const submitForm = async () => {
     closeDialog()
     retry.value()
   }
-  console.log(dialogType.value)
-
   if (dialogType.value === 'add') {
     const { newpassword, ...rest } = dialogFormData.value
     addUser({ ...rest }, callback)
