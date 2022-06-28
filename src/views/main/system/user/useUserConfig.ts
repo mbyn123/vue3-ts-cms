@@ -2,7 +2,7 @@ import { formItemsType } from '@/components/form/type'
 import { tableColumnsType } from '@/components/table/type'
 import { reactive } from 'vue'
 import { submitFormType } from './type'
-import { InternalRuleItem, Value, Values, ValidateOption } from 'async-validator/dist-types'
+import { InternalRuleItem, Value } from 'async-validator/dist-types'
 
 const useUserConfig = (dialogFormData: submitFormType) => {
   const searchFormItems: formItemsType[] = [
